@@ -42,8 +42,8 @@
 }
 </script>
 <style>
-  :root { --bg:#fafaf8; --fg:#1b1b1b; --muted:#666; --line:#e4e4e0; --accent:#c4552d; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#141414; --fg:#eee; --muted:#9a9a9a; --line:#2a2a2a; --accent:#e07a50; } }
+  :root { --bg:#fafaf8; --fg:#1b1b1b; --muted:#666; --line:#e4e4e0; --accent:#c4552d; --card:#ffffff; --code:#f1f1ee; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141414; --fg:#eee; --muted:#9a9a9a; --line:#2a2a2a; --accent:#e07a50; --card:#1b1b1b; --code:#222; } }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.7 -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
   main { max-width:760px; margin:0 auto; padding:64px 16px; }
@@ -51,9 +51,18 @@
   .sub { color:var(--muted); margin:0 0 8px; }
   .meta { color:var(--muted); font-size:14px; margin:0 0 40px; }
   h2 { font-size:15px; text-transform:uppercase; letter-spacing:1px; color:var(--accent); margin:40px 0 12px; }
+  h3 { font-size:17px; margin:0 0 6px; }
   p { margin:0 0 12px; }
   ul { padding-left:20px; margin:0; }
   li { margin-bottom:6px; }
+  .nums { display:flex; gap:28px; flex-wrap:wrap; margin:0 0 8px; }
+  .num b { display:block; font-size:24px; line-height:1.2; }
+  .num span { color:var(--muted); font-size:13px; }
+  .card { border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:0 0 12px; background:var(--card); }
+  .card p { margin:0 0 8px; }
+  .card .ko { color:var(--muted); font-size:14px; }
+  .tag { display:inline-block; font-size:12px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:0 8px; margin:2px 6px 0 0; }
+  pre.sample { background:var(--code); border-radius:8px; padding:10px 12px; font:13px/1.5 ui-monospace, Consolas, monospace; overflow:auto; margin:8px 0 0; }
   table { width:100%; border-collapse:collapse; font-size:15px; }
   td { padding:10px 0; border-top:1px solid var(--line); vertical-align:top; }
   td:first-child { color:var(--muted); width:42%; padding-right:12px; }
@@ -71,14 +80,59 @@
   <p>제이와이엔은 2022년 10월 인천에서 설립된 온라인 유통 회사입니다. 국내외 패션·라이프스타일 상품을 소싱해 KREAM(크림) 등 온라인 리셀 마켓플레이스에서 판매하며, 운영 업무를 자체 개발한 자동화 도구로 처리합니다. 통신판매업 신고를 마친 사업자이며 외부 투자 없이 자체 자금으로 운영합니다.</p>
   <p>JYN is a Korean e-commerce company founded in October 2022 in Incheon. We source fashion and lifestyle products from domestic and overseas retailers and sell them through online channels, mainly the KREAM resale marketplace. We are a registered mail-order business, bootstrapped, and our operations run on automation tools we build in-house.</p>
 
-  <h2>What we build</h2>
+  <h2>In numbers</h2>
+  <div class="nums">
+    <div class="num"><b>20+</b><span>retail sites monitored</span></div>
+    <div class="num"><b>236</b><span>Go source files in the ops hub</span></div>
+    <div class="num"><b>210</b><span>Go test files</span></div>
+    <div class="num"><b>2022</b><span>operating since</span></div>
+  </div>
+
+  <h2>Products</h2>
+  <p>Internal software that runs JYN&#39;s day-to-day operations. Everything below is in production use; it is built and maintained with Claude Code, and parts of it run on Claude.</p>
+
+  <div class="card">
+    <h3>JYNB Ops Hub</h3>
+    <p>A Go dashboard that runs the business: it watches stock and prices on 20+ domestic and overseas retailers and marketplaces (KREAM, 11st, Musinsa, COS, Cettire and more), sends a Discord alert within seconds of a restock or price drop, and keeps orders, shipments and accounts in one place.</p>
+    <p class="ko">매장 재고·가격 감시, 디스코드 알림, 주문·배송·계정 관리를 한 화면에서 처리하는 운영 허브(Go).</p>
+    <pre class="sample">[COS KR] RESTOCK  Wool-blend coat · size 48 · 1 left · ₩219,000
+→ detail · cart · 09:00:12 (+0.8s from check)</pre>
+    <span class="tag">Go</span><span class="tag">Built with Claude Code</span><span class="tag">236 source / 210 test files</span>
+  </div>
+
+  <div class="card">
+    <h3>KREAM listing &amp; price management</h3>
+    <p>Keeps our KREAM listings in step with inventory: suggests re-pricing within rules, pauses bidding wars instead of chasing them, reminds us about storage fees, and queues follow-up work when the market moves.</p>
+    <p class="ko">크림 판매 목록을 재고와 맞추고, 규칙 안에서 가격을 조정하며, 창고비·후속 작업을 알려 주는 관리 도구.</p>
+    <span class="tag">Go</span><span class="tag">Built with Claude Code</span>
+  </div>
+
+  <div class="card">
+    <h3>Shipping &amp; customs automation</h3>
+    <p>Tracks overseas orders end to end: forwarder intake, DHL Express import notices and Korean business-customs clearance. A scheduled Claude routine reads inbound DHL mail three times a day and flags shipments that still need clearance; a Google Apps Script files the clearance request with the DHL customs desk within five minutes of the notice.</p>
+    <p class="ko">해외 주문의 배대지 입고·DHL 수입 통지·사업자 통관을 추적. Claude 예약 루틴이 DHL 메일을 읽어 통관 필요 건을 표시하고, Apps Script가 통관 요청 메일을 자동 발송.</p>
+    <span class="tag">Runs on Claude (scheduled routine)</span><span class="tag">Google Apps Script</span><span class="tag">Built with Claude Code</span>
+  </div>
+
+  <div class="card">
+    <h3>KakaoTalk ops assistant</h3>
+    <p>A KakaoTalk bot that turns chat notes into inventory records. Claude (Sonnet) confirms each note in polite Korean before it is written; code handles the files, Claude only writes text.</p>
+    <p class="ko">카카오톡으로 보낸 메모를 재고 기록으로 바꿔 주는 비서. Claude(Sonnet)가 확인 문장을 쓰고 파일 처리는 코드가 담당.</p>
+    <span class="tag">Runs on Claude (Sonnet)</span><span class="tag">Python</span>
+  </div>
+
+  <div class="card">
+    <h3>Stock lookup tools</h3>
+    <p>One-click stock checks for storefronts (Shopify, Cafe24) and KREAM listings, used before every purchase decision.</p>
+    <p class="ko">구매 전 매장·크림 재고를 한 번에 확인하는 북마클릿·스크립트.</p>
+    <span class="tag">JavaScript</span><span class="tag">Built with Claude Code</span>
+  </div>
+
+  <h2>Where Claude fits</h2>
   <ul>
-    <li>Inventory and price monitoring across retail sites, with real-time alerts</li>
-    <li>Order, overseas shipping and customs-clearance tracking with automated emails</li>
-    <li>Resale marketplace listing and price management</li>
-    <li>An internal operations dashboard that ties these tools together</li>
+    <li><b>Today:</b> Claude Code writes and maintains most of the code above. Two scheduled Claude routines run every day: customs-mail triage and the KakaoTalk assistant.</li>
+    <li><b>Next:</b> the Claude API via the Agent SDK to classify alerts (buy / watch / ignore) and to draft KREAM listing copy, so daily manual operations shrink from hours to minutes.</li>
   </ul>
-  <p style="margin-top:12px">We use Claude to design, build and run these tools, and are moving more of the workflow onto the Claude API.</p>
 
   <h2>Company information</h2>
   <table>
